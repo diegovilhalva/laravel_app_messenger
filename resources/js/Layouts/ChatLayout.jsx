@@ -83,9 +83,9 @@ const ChatLayout = ({children}) => {
     },[])
   return (
     <>
-       <div className="flex-1 w-full overflow-hidden">
+       <div className=" flex flex-1 w-full overflow-hidden">
             <div className={`transition-all w-full sm:w-[220px] md:w-[300px] bg-slate-800  flex flex-col overflow-hidden ${ selectedConversation ? '-ml-[100%] sm:ml-0' : ''}`}>
-                <div className="flex items-center justify-between py-2 px-3 text-xl font-medium">
+                <div className="flex items-center justify-between py-2 px-3 text-xl font-medium text-gray-200">
                     Conversas
                     <div className="tooltip tooltip-left" data-tip="Criar novo grupo">
                             <button className="text-gray-400 hover:text-gray-200">
@@ -97,8 +97,9 @@ const ChatLayout = ({children}) => {
                     <TextInput onKeyUp={onSearch} placeholder="Pesquisar pessoas e grupos" className="w-full" />
                 </div>
                 <div className="flex-1 overflow-auto">
-                    {sortedConversations &&  sortedConversations.map((converstion) => (
-                        <ConversationItem key={`${converstion.is_group ? 'group' : 'user_'}${converstion.id}`} conversation={converstion} online={!!isUserOnline(converstion.id)} selectedConversation={selectedConversation}/>
+                    {sortedConversations &&  sortedConversations.map((conversation,index) => (
+                        <ConversationItem 
+                        key={`${conversation.is_group ? 'group_' : 'user_'}${conversation.id}_${index}`} conversation={conversation} online={!!isUserOnline(conversation.id)} selectedConversation={selectedConversation}/>
                     ))}
                 </div>
             </div>

@@ -15,14 +15,16 @@ const ConversationItem = ({ conversation, selectedConversation = null, online = 
             classes = 'border-blue-500 bg-black/20'
         }
     }
+    console.log(currentUser)
+   
     return (
-        <Link href={conversation.is_group ? route('chat.group', conversation) : route('chat.user', conversation)} preserveState className={'coversation-item flex items-center gap-2 p-2 text-gray-300 transition-all cursor-pointer border-l-4 hover:bg-black/30' + classes + (conversation.is_user && currentUser.is_admin ? 'pr-2' : 'pr-4')}>
+        <Link href={conversation.is_group ? route('chat.group', conversation) : route('chat.user', conversation)}  preserveState className={'conversation-item flex items-center gap-2 p-2 text-gray-300 transition-all cursor-pointer border-l-4 hover:bg-black/30' + classes + (conversation.is_user && currentUser.is_admin ? 'pr-2' : 'pr-4')}>
             {
                 conversation.is_user && (
                     <UserAvatar user={conversation} online={online} />
                 )
             }
-            {conversation.is_group &&  <GroupAvatar/>}
+            {conversation.is_group && <GroupAvatar />}
             <div className={'flex-1 text-xs max-w-full overflow-hidden' + (conversation.is_user && conversation.blocked_at ? 'opacity-50' : '')}>
                 <div className="flex gap-1 justify-between items-center">
                     <h3 className="text-sm font-semibold overflow-hidden text-nowrap text-ellipsis">
@@ -42,8 +44,8 @@ const ConversationItem = ({ conversation, selectedConversation = null, online = 
                     </p>
                 )}
             </div>
-            {currentUser.is_admin && conversation.is_user && (
-                <UserOptionsDropdown conversation={conversation}/>
+            {currentUser.is_admin  && conversation.is_user && (
+                <UserOptionsDropdown conversation={conversation} />
             )}
         </Link>
     )

@@ -49,7 +49,11 @@ class Group extends Model
             'is_user' => false,
             'owner_id' => $this->owner_id,
             'users' => $this->users,
-            'user_ids' => $this->users->pluck('id')
+            'user_ids' => $this->users->pluck('id'),
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+            'last_message' => $this->last_message,
+            'last_message_date' => $this->last_message_date,
 
         ];
     }
