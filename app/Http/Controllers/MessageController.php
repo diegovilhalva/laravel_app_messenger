@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SocketMessage;
 use App\Http\Requests\StoreMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Conversation;
@@ -34,7 +35,7 @@ class MessageController extends Controller
 
         $messages = Message::where('group_id', $group->id)
             ->latest()
-            ->paginate(50);
+            ->paginate(10);
 
         return inertia('Home', [
             'selectedConversation' => $group->toConversationArray(),
@@ -95,8 +96,20 @@ class MessageController extends Controller
         if ($receiverId) {
             Conversation::updateConversationWithMessage($receiverId, auth()->id(), $message);
         }
+        if ($groupId) {
+            Group::updateGroupWithMessage($groupId,$message);
+        }
+        SocketMessage::dispatch($message);
+
+        return new MessageResource($message);
     }
     public function destroy(Message $message)
     {
+            if ($message->sender_id !== auth()->id()) {
+                return response()->json(['message' => 'Forbidden'],403);
+            }
+            $message->delete();
+
+            return response('',204);
     }
 }
