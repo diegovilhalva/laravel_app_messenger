@@ -13,8 +13,9 @@ function Home({ selectedConversation = null, messages = null }) {
     const messagesContainerRef = useRef(null)
     useEffect(() => {
         setTimeout(() => {
-
-            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+            if (messagesContainerRef.current) {
+                messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+            }
         }, 10);
     }, [selectedConversation])
     useEffect(() => {
@@ -51,7 +52,7 @@ function Home({ selectedConversation = null, messages = null }) {
                             </div>
                         )}
                     </div>
-                    <MessageInput conversation={selectedConversation}/>
+                    <MessageInput conversation={selectedConversation} />
                 </>
             )}
         </>)
