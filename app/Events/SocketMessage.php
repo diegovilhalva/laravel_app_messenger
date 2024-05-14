@@ -22,14 +22,13 @@ class SocketMessage implements ShouldBroadcastNow
      */
     public function __construct(public Message $message)
     {
-       //
+        //
     }
 
     public function broadcastWith(): array
     {
         return [
-            'message' => new MessageResource($this->message),
-
+            'message' => new MessageResource($this->message)
         ];
     }
 
@@ -41,15 +40,13 @@ class SocketMessage implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         $m = $this->message;
-        $channels = [
-            new PrivateChannel('message.user.'.collect([$m->sender_id,$m->receiver_id])->sort()->implode('-')),
+        $m = $this->message;
+        $channels = [];
 
-        ];
-
-        if ($m->group_id) {
-            $channels[] = new PrivateChannel('message.group.'. $m->group_id);
+        if($m->group_id){
+            $channels[] = new PrivateChannel('message.group.' . $m->group_id);
         }else{
-            new PrivateChannel('message.user.' . collect([$m->sender_id,$m->receiver_id])->sort()->implode('-'));
+            new PrivateChannel('message.user.' . collect([$m->sender_id, $m->receiver_id])->sort()->implode('-'));
         }
 
         return $channels;
