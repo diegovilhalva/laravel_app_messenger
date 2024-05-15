@@ -8,7 +8,7 @@ export const EventBusProvider = ({ children }) => {
     const emit = (name, data) => {
         if (events[name]) {
             for (let cb of events[name]) {
-                cb(daba)
+                cb(data)
             }
         }
     }
