@@ -5,6 +5,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect } from 'react';
+import { useEventBus } from '@/EventBus';
 
 
 export default function Authenticated({ header, children }) {
@@ -12,6 +13,8 @@ export default function Authenticated({ header, children }) {
     const user = page.props.auth.user
     const conversations = page.props.conversations
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+
+    const {emit} = useEventBus()
     
 
     useEffect(() => {
@@ -31,6 +34,7 @@ export default function Authenticated({ header, children }) {
                     console.log(error);
                 })
                 .listen("SocketMessage", (e) => {
+                    console.log("SocketMessage", e);
                     const message = e.message;
 
                     emit("message.created", message);
@@ -43,9 +47,9 @@ export default function Authenticated({ header, children }) {
                         message:
                             message.message || `Shared ${
                                 message.attachments.length === 1
-                                    ? "an attachment"
+                                    ? "1 Arquivo"
                                     : message.attachments.length +
-                                        " attachments"
+                                        "Arquivos"
                             }`,
                     });
                 })

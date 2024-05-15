@@ -13,19 +13,26 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class MessageController extends Controller
 {
     public function byUser(User $user)
     {
-        $messages = Message::where('sender_id', auth()->id())
-            ->where('receiver_id', $user->id)
-            ->orWhere('sender_id', $user->id)
-            ->where('receiver_id', auth()->id())
+        $messages = Message::query()
+            ->whereNull('group_id')
+            ->where(function ($query) use ($user) {
+                $query->where('sender_id', auth()->id())
+                    ->orWhere('sender_id', $user->id);
+            })
+            ->Where(function ($query) use ($user) {
+                $query->Where('receiver_id', $user->id)
+                    ->orWhere('receiver_id', auth()->id());
+            })
             ->latest()
             ->paginate(10);
 
-        return inertia('Home', [
+        return Inertia::render('Home', [
             'selectedConversation' => $user->toConversationArray(),
             'messages' => MessageResource::collection($messages),
         ]);
@@ -98,7 +105,7 @@ class MessageController extends Controller
             Conversation::updateConversationWithMessage($receiverId, auth()->id(), $message);
         }
         if ($groupId) {
-            Group::updateGroupWithMessage($groupId,$message);
+            Group::updateGroupWithMessage($groupId, $message);
         }
         SocketMessage::dispatch($message);
 
@@ -106,11 +113,11 @@ class MessageController extends Controller
     }
     public function destroy(Message $message)
     {
-            if ($message->sender_id !== auth()->id()) {
-                return response()->json(['message' => 'Forbidden'],403);
-            }
-            $message->delete();
+        if ($message->sender_id !== auth()->id()) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+        $message->delete();
 
-            return response('',204);
+        return response('', 204);
     }
 }

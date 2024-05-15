@@ -6,17 +6,30 @@ import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/solid';
 import ConversationHeader from '@/Components/App/ConversationHeader';
 import MessageItem from '@/Components/App/MessageItem';
 import MessageInput from '@/Components/App/MessageInput';
+import { useEventBus } from '@/EventBus';
+
 
 function Home({ selectedConversation = null, messages = null }) {
 
     const [localMessages, setLocalMessages] = useState([])
     const messagesContainerRef = useRef(null)
+    const {on} = useEventBus()
+
+    const messageCreated = (message) => {
+        if (selectedConversation && selectedConversation.is_group && selectedConversation.id === message.group_id) {
+            setLocalMessages((prevMessages) => [...prevMessages,message])
+        }
+    }
     useEffect(() => {
         setTimeout(() => {
             if (messagesContainerRef.current) {
                 messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
             }
         }, 10);
+       const offCreated =  on('message.created',messageCreated)
+       return () => {
+            offCreated()
+       }
     }, [selectedConversation])
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : [])
