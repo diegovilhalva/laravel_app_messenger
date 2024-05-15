@@ -27,22 +27,26 @@ export const formatMessageDateShort = (date) => {
     const now = new Date();
     const inputDate = new Date(date);
 
+  
+    //inputDate.setTime(inputDate.getTime() - inputDate.getTimezoneOffset() * 60 * 1000);
+
     if (isToday(inputDate)) {
         return inputDate.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
+            hour: '2-digit',
+            minute: '2-digit',
         });
     } else if (isYesterday(inputDate)) {
         return "Ontem";
-    } else if (inputDate.getFullYear === now.getFullYear()) {
-        return inputDate.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "short",
+    } else if (inputDate.getFullYear() === now.getFullYear()) {
+        return inputDate.toLocaleDateString([], {
+            day: "2-digit",
+            month: "short",
         });
     } else {
         return inputDate.toLocaleDateString();
     }
 }
+
 
 export const isToday = (date) => {
     const today = new Date();

@@ -55,10 +55,12 @@ function Home({ selectedConversation = null, messages = null }) {
             }
         }, 10);
        const offCreated =  on('message.created',messageCreated)
+       setScrolfromBottom(0)
        return () => {
             offCreated()
        }
     }, [selectedConversation])
+
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : [])
     }, [messages])
