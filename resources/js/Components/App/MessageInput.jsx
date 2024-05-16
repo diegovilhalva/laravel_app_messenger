@@ -1,9 +1,10 @@
 import { FaceSmileIcon, FireIcon, HandRaisedIcon, HandThumbUpIcon, PaperAirplaneIcon, PaperClipIcon, PhotoIcon } from "@heroicons/react/24/solid"
-import { useState } from "react"
+import { useState, Fragment } from "react"
 
 import NewMessageInput from "./NewMessageInput"
-import { Theme } from "emoji-picker-react"
+import EmojiPicker from "emoji-picker-react"
 import axios from "axios"
+import { Popover, Transition } from "@headlessui/react"
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("")
@@ -17,20 +18,20 @@ const MessageInput = ({ conversation = null }) => {
             setInputErrorMessage("Por favor,escreva uma mensagem ou envie um arquivo")
             setTimeout(() => {
                 setInputErrorMessage("")
-            },3000)
+            }, 3000)
             return;
         }
         const formData = new FormData()
-        formData.append('message',newMessage)
+        formData.append('message', newMessage)
         if (conversation.is_user) {
-            formData.append('receiver_id',conversation.id)
-        }else if (conversation.is_group){
-            formData.append('group_id',conversation.id)
+            formData.append('receiver_id', conversation.id)
+        } else if (conversation.is_group) {
+            formData.append('group_id', conversation.id)
         }
 
         setMessageSending(true)
-        axios.post(route('message.store'),formData,{
-            onUploadProgress:(progressEvent) => {
+        axios.post(route('message.store'), formData, {
+            onUploadProgress: (progressEvent) => {
                 const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100)
                 console.log(progress)
             }
@@ -38,10 +39,10 @@ const MessageInput = ({ conversation = null }) => {
             setNewMessage("")
             setMessageSending(false)
         })
-        .catch((error) => {
-            setMessageSending(false)
-        })
-        
+            .catch((error) => {
+                setMessageSending(false)
+            })
+
     }
     return (
         <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
@@ -57,8 +58,8 @@ const MessageInput = ({ conversation = null }) => {
             </div>
             <div className="order-1 px-3 xs:p-0 min-w-[220px] basis-full xs:basis-0 xs:order-2 flex-1 relative">
                 <div className="flex">
-                    <NewMessageInput value={newMessage} 
-                    onChange={(e) => setNewMessage(e.target.value)}  onSend={onSend}/>
+                    <NewMessageInput value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)} onSend={onSend} />
                     <button onClick={onSend} disabled={messageSending} className="btn btn-info rounded-l-none">
                         {messageSending && (
                             <span className="loading loading-spinner loading-xs"></span>
@@ -72,14 +73,23 @@ const MessageInput = ({ conversation = null }) => {
                 )}
             </div>
             <div className="order-3 xs:order-3 p-2 flex">
-                <button  className="p-1 text-gray-400 hover:text-gray-300">
-                <FaceSmileIcon className="w-6 h-6" />    
-                
-                </button> 
+                <Popover className="relative">
+                    <Popover.Button className="p-1 text-gray-400 hover:text-gray-300">
+                        <FaceSmileIcon className="w-6 h-6" />
+                    </Popover.Button>
+                    <Popover.Panel className="absolute z-10 right-0 bottom-full ">
+                        <EmojiPicker theme="dark" onEmojiClick={
+                            (e) => setNewMessage(newMessage + e.emoji)
+                        }>
+
+                        </EmojiPicker>
+                    </Popover.Panel>
+                </Popover>
+
                 <button className="p-1 text-gray-400 hover:text-gray-300">
                     <HandThumbUpIcon className="w-6 h-6" />
-                </button> 
-               
+                </button>
+
             </div>
         </div>
     )
