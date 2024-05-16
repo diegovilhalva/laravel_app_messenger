@@ -6,6 +6,10 @@
     height: 100vh;
 }
 
+.EmojiPickerReact.epr-dark-theme {
+    background-color: theme('colors.gray.800');
+}
+
 
 .conversation-item .avatar.online:before,
 .conversation-item .avatar.offline:before {

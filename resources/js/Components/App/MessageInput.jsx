@@ -44,6 +44,23 @@ const MessageInput = ({ conversation = null }) => {
             })
 
     }
+    const onLikeClick = () => {
+        if (messageSending) {
+            return
+        }
+        const data = {
+            message:'👍🏻'
+        }
+        if (conversation.is_user) {
+            data['receiver_id'] = conversation.id
+        } else if (conversation.is_group) {
+            data['group_id'] = conversation.id
+        }
+
+        axios.post(route('message.store'),data)
+
+        setNewMessage()
+    }
     return (
         <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
             <div className="order-2 flex-1 xs:flex-none xs:order-1 p-2">
@@ -86,7 +103,7 @@ const MessageInput = ({ conversation = null }) => {
                     </Popover.Panel>
                 </Popover>
 
-                <button className="p-1 text-gray-400 hover:text-gray-300">
+                <button onClick={onLikeClick} className="p-1 text-gray-400 hover:text-gray-300">
                     <HandThumbUpIcon className="w-6 h-6" />
                 </button>
 
