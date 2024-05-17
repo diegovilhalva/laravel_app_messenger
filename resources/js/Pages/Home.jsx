@@ -8,6 +8,7 @@ import MessageItem from '@/Components/App/MessageItem';
 import MessageInput from '@/Components/App/MessageInput';
 import { useEventBus } from '@/EventBus';
 import axios from 'axios';
+import AttachmentsPreviewModal from '@/Components/App/AttachmentsPreviewModal';
 
 
 function Home({ selectedConversation = null, messages = null }) {
@@ -17,6 +18,8 @@ function Home({ selectedConversation = null, messages = null }) {
     const [scrollFromBottom,setScrolfromBottom] = useState(0)
     const messagesContainerRef = useRef(null)
     const loadMoreIntersect = useRef(null)
+    const [showAttachmentPreview,setShowAttachmentPreview] = useState(false)
+    const [previewAttachment,setPreviewAttachment] = useState({}) 
     const {on} = useEventBus()
 
     const messageCreated = (message) => {
@@ -48,6 +51,13 @@ function Home({ selectedConversation = null, messages = null }) {
                 })
              })
     },[localMessages,noMoreMessages])
+    const onAttachmentClick = (attachments,ind) => {
+        setPreviewAttachment({
+            attachments,
+            ind
+        })
+        setShowAttachmentPreview(true)
+    }
     useEffect(() => {
         setTimeout(() => {
             if (messagesContainerRef.current) {
@@ -124,6 +134,10 @@ function Home({ selectedConversation = null, messages = null }) {
                     </div>
                     <MessageInput conversation={selectedConversation} />
                 </>
+            )}
+            {previewAttachment.attachments && (
+                <AttachmentsPreviewModal attachments={previewAttachment.attachments} 
+                index={previewAttachment.ind} show={showAttachmentPreview} onClose={() =>setShowAttachmentPreview(false)}/>
             )}
         </>)
 }

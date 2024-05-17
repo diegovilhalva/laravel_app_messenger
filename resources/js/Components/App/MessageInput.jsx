@@ -6,6 +6,8 @@ import EmojiPicker from "emoji-picker-react"
 import axios from "axios"
 import { Popover, Transition } from "@headlessui/react"
 import { isAudio, isImage } from "@/helpers"
+import CustomAudioPlayer from "./CustomAudioPlayer"
+import AttachmentPreview from "./AttachmentPreview"
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("")
