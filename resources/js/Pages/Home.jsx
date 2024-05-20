@@ -127,7 +127,8 @@ function Home({ selectedConversation = null, messages = null }) {
                             <div className="flex flex-1 flex-col">
                                 <div ref={loadMoreIntersect}></div>
                                 {localMessages.map((message) => (
-                                    <MessageItem key={message.id} message={message} />
+                                    <MessageItem key={message.id} message={message} 
+                                    attachmentClick={onAttachmentClick} />
                                 ))}
                             </div>
                         )}

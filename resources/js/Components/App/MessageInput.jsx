@@ -34,7 +34,7 @@ const MessageInput = ({ conversation = null }) => {
         if (messageSending) {
             return;
         }
-        if (newMessage.trim() === "") {
+        if (newMessage.trim() === "" && chosenFiles.length === 0) {
             setInputErrorMessage("Por favor,escreva uma mensagem ou envie um arquivo")
             setTimeout(() => {
                 setInputErrorMessage("")
@@ -139,7 +139,8 @@ const MessageInput = ({ conversation = null }) => {
                                 {!isAudio(file.file) && !isImage(file.file) && (
                                     <AttachmentPreview file={file} />
                                 )}
-                                <button className="absolute w-6 h-6 rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10" onClick={() => setChosenFiles(chosenFiles.filter((f) => f.name.name !== file.file.name))}>
+                                <button className="absolute w-6 h-6 rounded-full bg-gray-800 -right-2 -top-2 text-gray-300 hover:text-gray-100 z-10" onClick={() => setChosenFiles(chosenFiles.filter(
+                                    (f) => f.file.name !== file.file.name))}>
                                     <XCircleIcon className="w-6" />
                                 </button>
                             </div>
