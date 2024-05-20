@@ -8,29 +8,31 @@ import { Popover, Transition } from "@headlessui/react"
 import { isAudio, isImage } from "@/helpers"
 import CustomAudioPlayer from "./CustomAudioPlayer"
 import AttachmentPreview from "./AttachmentPreview"
+import AudioRecorder from "./AudioRecorder"
 
 const MessageInput = ({ conversation = null }) => {
     const [newMessage, setNewMessage] = useState("")
     const [inputErrorMessage, setInputErrorMessage] = useState("")
     const [messageSending, setMessageSending] = useState(false)
-    const [chosenFiles,setChosenFiles] = useState([])
-    const [uploadProgress,setUploadProgress] = useState(0)
+    const [chosenFiles, setChosenFiles] = useState([])
+    const [uploadProgress, setUploadProgress] = useState(0)
 
     const onFileChange = (e) => {
         const files = e.target.files
 
         const updatedFiles = [...files].map((file) => {
             return {
-                file : file,
-                url:URL.createObjectURL(file)
+                file: file,
+                url: URL.createObjectURL(file)
             }
         })
         setChosenFiles((prevFiles) => {
-            return [...prevFiles,...updatedFiles]
+            return [...prevFiles, ...updatedFiles]
         })
     }
 
     const onSend = () => {
+        
         if (messageSending) {
             return;
         }
@@ -43,7 +45,7 @@ const MessageInput = ({ conversation = null }) => {
         }
         const formData = new FormData()
         chosenFiles.forEach((file) => {
-            formData.append('attachments[]',file.file)
+            formData.append('attachments[]', file.file)
         })
         formData.append('message', newMessage)
         if (conversation.is_user) {
@@ -78,7 +80,7 @@ const MessageInput = ({ conversation = null }) => {
             return
         }
         const data = {
-            message:'👍🏻'
+            message: '👍🏻'
         }
         if (conversation.is_user) {
             data['receiver_id'] = conversation.id
@@ -86,9 +88,13 @@ const MessageInput = ({ conversation = null }) => {
             data['group_id'] = conversation.id
         }
 
-        axios.post(route('message.store'),data)
+        axios.post(route('message.store'), data)
 
         setNewMessage()
+    }
+
+    const recordedAudioReady = (file, url) => {
+        setChosenFiles((prevFies) => [...prevFies, { file, url }])
     }
     return (
         <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
@@ -101,11 +107,12 @@ const MessageInput = ({ conversation = null }) => {
                     <PhotoIcon className="w-6" />
                     <input type="file" multiple accept="image/*" onChange={onFileChange} className="absolute left-0 top-0 right-0 bottom-0 z-20 opacity-0 cursor-pointer" />
                 </button>
+                <AudioRecorder fileReady={recordedAudioReady} />
             </div>
             <div className="order-1 px-3 xs:p-0 min-w-[220px] basis-full xs:basis-0 xs:order-2 flex-1 relative">
                 <div className="flex">
                     <NewMessageInput value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)} onSend={onSend}  />
+                        onChange={(e) => setNewMessage(e.target.value)} onSend={onSend} />
                     <button onClick={onSend} disabled={messageSending} className="btn btn-info rounded-l-none">
                         {messageSending && (
                             <span className="loading loading-spinner loading-xs"></span>
@@ -114,11 +121,11 @@ const MessageInput = ({ conversation = null }) => {
                         <span className="hidden sm:inline">Enviar</span>
                     </button>
                 </div>
-                {!!uploadProgress &&(
+                {!!uploadProgress && (
                     <progress
-                    className="progress progress-info  w-full"
-                    value={uploadProgress}
-                    max={100}
+                        className="progress progress-info  w-full"
+                        value={uploadProgress}
+                        max={100}
                     ></progress>
                 )}
                 {inputErrorMessage && (
@@ -133,7 +140,7 @@ const MessageInput = ({ conversation = null }) => {
                                 )}
                                 {
                                     isAudio(file.file) && (
-                                        <CustomAudioPlayer file={file} showVolume={false}/>
+                                        <CustomAudioPlayer file={file} showVolume={false} />
                                     )
                                 }
                                 {!isAudio(file.file) && !isImage(file.file) && (
