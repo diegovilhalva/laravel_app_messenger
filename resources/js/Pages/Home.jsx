@@ -14,29 +14,51 @@ import AttachmentsPreviewModal from '@/Components/App/AttachmentsPreviewModal';
 function Home({ selectedConversation = null, messages = null }) {
 
     const [localMessages, setLocalMessages] = useState([])
-    const [noMoreMessages,setNoMoreMessages] = useState(false)
-    const [scrollFromBottom,setScrolfromBottom] = useState(0)
+    const [noMoreMessages, setNoMoreMessages] = useState(false)
+    const [scrollFromBottom, setScrolfromBottom] = useState(0)
     const messagesContainerRef = useRef(null)
     const loadMoreIntersect = useRef(null)
-    const [showAttachmentPreview,setShowAttachmentPreview] = useState(false)
-    const [previewAttachment,setPreviewAttachment] = useState({}) 
-    const {on} = useEventBus()
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false)
+    const [previewAttachment, setPreviewAttachment] = useState({})
+    const { on } = useEventBus()
 
     const messageCreated = (message) => {
         if (selectedConversation && selectedConversation.is_group && selectedConversation.id == message.group_id) {
-            setLocalMessages((prevMessages) => [...prevMessages,message])
+            setLocalMessages((prevMessages) => [...prevMessages, message])
         }
         if (selectedConversation && selectedConversation.is_user && (selectedConversation.id == message.sender_id || selectedConversation.id == message.receiver_id)) {
-            setLocalMessages((prevMessages) => [...prevMessages,message])
+            setLocalMessages((prevMessages) => [...prevMessages, message])
         }
     }
+
+    const messageDeleted = ({ message }) => {
+        if (
+            selectedConversation &&
+            selectedConversation.is_group &&
+            selectedConversation.id === message.group_id
+        ) {
+            setLocalMessages((prevMessages) => {
+                return prevMessages.filter((m) => m.id !== message.id);
+            });
+        }
+        if (
+            selectedConversation &&
+            selectedConversation.is_user &&
+            (selectedConversation.id == message.sender_id ||
+                selectedConversation.id == message.receiver_id)
+        ) {
+            setLocalMessages((prevMessages) => {
+                return prevMessages.filter((m) => m.id !== message.id);
+            });
+        }
+    };
     const loadMoreMessages = useCallback(() => {
         if (noMoreMessages) {
             return;
         }
         const firstMessage = localMessages[0]
-        axios.get(route('message.loadOlder',firstMessage.id))
-             .then(({data}) => {
+        axios.get(route('message.loadOlder', firstMessage.id))
+            .then(({ data }) => {
                 if (data.data.length === 0) {
                     setNoMoreMessages(true)
                     return;
@@ -45,13 +67,13 @@ function Home({ selectedConversation = null, messages = null }) {
                 const scrollTop = messagesContainerRef.current.scrollTop
                 const clientHeight = messagesContainerRef.current.clientHeight
                 const tmpScrollFromBottom = scrollHeight - scrollTop - clientHeight
-                setScrolfromBottom(scrollHeight- scrollTop - clientHeight)
+                setScrolfromBottom(scrollHeight - scrollTop - clientHeight)
                 setLocalMessages((prevMessages) => {
-                    return [...data.data.reverse(),...prevMessages]
+                    return [...data.data.reverse(), ...prevMessages]
                 })
-             })
-    },[localMessages,noMoreMessages])
-    const onAttachmentClick = (attachments,ind) => {
+            })
+    }, [localMessages, noMoreMessages])
+    const onAttachmentClick = (attachments, ind) => {
         setPreviewAttachment({
             attachments,
             ind
@@ -64,11 +86,13 @@ function Home({ selectedConversation = null, messages = null }) {
                 messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
             }
         }, 10);
-       const offCreated =  on('message.created',messageCreated)
-       setScrolfromBottom(0)
-       return () => {
+        const offCreated = on('message.created', messageCreated)
+        const offDeleted = on('message.deleted', messageDeleted)
+        setScrolfromBottom(0)
+        return () => {
             offCreated()
-       }
+            offDeleted()
+        }
     }, [selectedConversation])
 
     useEffect(() => {
@@ -76,21 +100,21 @@ function Home({ selectedConversation = null, messages = null }) {
     }, [messages])
     useEffect(() => {
         if (messagesContainerRef.current && scrollFromBottom !== null) {
-            messagesContainerRef.current.scrollTop =  messagesContainerRef.current.scrollHeight - messagesContainerRef.current.offsetHeight -
-            scrollFromBottom
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight - messagesContainerRef.current.offsetHeight -
+                scrollFromBottom
         }
         if (noMoreMessages) {
             return
         }
         const observer = new IntersectionObserver(
-            (entries) => 
+            (entries) =>
                 entries.forEach(
                     (entry) => entry.isIntersecting && loadMoreMessages()
                 ),
-                {
-                    rootMargin:'0px  0px 250px 0px'
-                }
-        ) 
+            {
+                rootMargin: '0px  0px 250px 0px'
+            }
+        )
         if (loadMoreIntersect.current) {
             setTimeout(() => {
                 observer.observe(loadMoreIntersect.current)
@@ -99,7 +123,7 @@ function Home({ selectedConversation = null, messages = null }) {
         return () => {
             observer.disconnect()
         }
-    },[localMessages])
+    }, [localMessages])
 
     return (
         <>
@@ -127,8 +151,8 @@ function Home({ selectedConversation = null, messages = null }) {
                             <div className="flex flex-1 flex-col">
                                 <div ref={loadMoreIntersect}></div>
                                 {localMessages.map((message) => (
-                                    <MessageItem key={message.id} message={message} 
-                                    attachmentClick={onAttachmentClick} />
+                                    <MessageItem key={message.id} message={message}
+                                        attachmentClick={onAttachmentClick} />
                                 ))}
                             </div>
                         )}
@@ -137,8 +161,8 @@ function Home({ selectedConversation = null, messages = null }) {
                 </>
             )}
             {previewAttachment.attachments && (
-                <AttachmentsPreviewModal attachments={previewAttachment.attachments} 
-                index={previewAttachment.ind} show={showAttachmentPreview} onClose={() =>setShowAttachmentPreview(false)}/>
+                <AttachmentsPreviewModal attachments={previewAttachment.attachments}
+                    index={previewAttachment.ind} show={showAttachmentPreview} onClose={() => setShowAttachmentPreview(false)} />
             )}
         </>)
 }

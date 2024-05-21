@@ -28,27 +28,49 @@ const ChatLayout = ({children}) => {
         )
     }
 
+    
     const messageCreated = (message) => {
-        setLocalConversations((oldUsers) =>{
-            return oldUsers.map((u) => {
-                if (message.receiver_id && !u.is_group && (u.id == message || u.id == message.receiver_id)) {
-                    u.last_message = message.message
-                    u.last_message_date = message.created_at
-                    return u
+        setLocalConversations((oldUsers) => {
+            return oldUsers.map((user) => {
+                if (
+                    message.receiver_id &&
+                    !user.is_group &&
+                    (user.id == message.sender_id ||
+                        user.id == message.receiver_id)
+                ) {
+                    user.last_message = message.message;
+                    user.last_message_date = message.created_at;
+                    return user;
                 }
-                if (message.group_id && u.is_group && u.id == message.group_id) {
-                    u.last_message = message.message
-                    u.last_message_date = message.created_at
-                    return u
+
+                if (
+                    message.group_id &&
+                    user.is_group &&
+                    user.id == message.group_id
+                ) {
+                    user.last_message = message.message;
+                    user.last_message_date = message.created_at;
+                    return user;
                 }
-                return u
-            })
-        })
+                return user;
+            });
+        });
+
+    };
+
+    const messageDeleted =  ({prevMessage}) => {
+        if (!prevMessage) {
+            return;
+        }
+
+        messageCreated(prevMessage)
     }
     useEffect(() => {
         const offcreated = on('message.created',messageCreated)
+        const offdeleted = on('message.deleted',messageDeleted)
         return () => {
             offcreated()
+            offdeleted()
         }
     },[on])
     useEffect(() => {
