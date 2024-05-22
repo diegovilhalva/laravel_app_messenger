@@ -114,9 +114,7 @@ const MessageInput = ({ conversation = null }) => {
                     <NewMessageInput value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)} onSend={onSend} />
                     <button onClick={onSend} disabled={messageSending} className="btn btn-info rounded-l-none">
-                        {messageSending && (
-                            <span className="loading loading-spinner loading-xs"></span>
-                        )}
+                        
                         <PaperAirplaneIcon className="w-6" />
                         <span className="hidden sm:inline">Enviar</span>
                     </button>
