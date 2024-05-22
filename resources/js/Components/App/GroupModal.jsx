@@ -73,7 +73,8 @@ const GroupModal = ({ show = false, onClose = () => { } }) => {
                 </div>
                 <div className="mt-4">
                     <InputLabel value="Selecionar Usuários" />
-                    <UserPicker  value={users.filter((u) =>  group.owner_id !== u.id && data.user_ids.includes(u.id) ) || []}/>
+                    <UserPicker  value={users.filter((u) =>  group.owner_id !== u.id && data.user_ids.includes(u.id) ) || []} options={users} onSelect={(users) => setData('user_ids',users.map((u) => u.id))}/>
+                    <InputError className='mt-2' message={errors.user_ids} />
                 </div>
                 <div className="mt-6 flex justify-end">
                     <SecondaryButton onClick={closeModal}>
