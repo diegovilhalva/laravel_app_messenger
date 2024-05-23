@@ -16,7 +16,7 @@ const UserPicker = ({ value, options, onSelect }) => {
     )
     const onSelected = (persons) => {
         setSelected(persons)
-        onSelected(persons)
+        onSelect(persons)
     }
     return (
         <>
