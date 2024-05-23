@@ -28,8 +28,8 @@ const GroupModal = ({ show = false, onClose = () => { } }) => {
         if (group.id) {
             put(route('group.update', group.id), {
                 onSuccess: () => {
-                    closeModal()
                     emit('toast.show', `Grupo "${data.name} atualizado"`)
+                    closeModal()
                 }
             })
             return;
@@ -37,6 +37,7 @@ const GroupModal = ({ show = false, onClose = () => { } }) => {
         post(route('group.store'), {
             onSuccess: () => {
                 emit('toast.show', `Grupo "${data.name}" criado`)
+                closeModal()
             }
         })
     }
