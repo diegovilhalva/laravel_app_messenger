@@ -27,7 +27,7 @@ class UserController extends Controller
     {
         $user->update(['is_admin' => !(bool) $user->is_admin]);
 
-        $message = 'Usuáro mudou para' . ($user->is_admin ? 'Admin' : 'Usuário comum');
+        $message = 'Usuáro mudou para  ' . ($user->is_admin ? 'Admin' : 'Usuário comum');
 
         return response()->json(['message' => $message]);
 
@@ -37,9 +37,9 @@ class UserController extends Controller
     {
             if ($user->blocked_at) {
                 $user->blocked_at = null;
-                $message = 'Conta ativada';
+                $message = 'Conta desbloaqueada';
             }else{
-                $user->bloced_at = now();
+                $user->blocked_at = now();
                 $message = 'Conta bloqueada';
             }
             $user->save();
