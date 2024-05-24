@@ -8,6 +8,9 @@ import { useEffect } from 'react';
 import { useEventBus } from '@/EventBus';
 import Toast from '@/Components/App/Toast';
 import NewMessageNotification from '@/Components/App/NewMessageNotification';
+import PrimaryButton from '@/Components/PrimaryButton';
+import { UserPlusIcon } from '@heroicons/react/24/solid';
+import NewUserModal from '@/Components/App/NewUserModal';
 
 
 export default function Authenticated({ header, children }) {
@@ -15,7 +18,7 @@ export default function Authenticated({ header, children }) {
     const user = page.props.auth.user
     const conversations = page.props.conversations
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
-
+    const [showNewuserModal,setShowNewUselModal] = useState(false)
     const { emit } = useEventBus()
 
 
@@ -111,7 +114,13 @@ export default function Authenticated({ header, children }) {
                             </div>
 
                             <div className="hidden sm:flex sm:items-center sm:ms-6">
-                                <div className="ms-3 relative">
+                                <div className=" flex ms-3 relative">
+                                    {user.is_admin && (
+                                        <PrimaryButton onClick={(e) => setShowNewUselModal(true)}>
+                                            <UserPlusIcon className='h-5 w-5 -ms-1 me-1'/>
+                                            Adicionar usuário
+                                        </PrimaryButton>
+                                    )}
                                     <Dropdown>
                                         <Dropdown.Trigger>
                                             <span className="inline-flex rounded-md">
@@ -206,6 +215,7 @@ export default function Authenticated({ header, children }) {
             </div>
             <Toast/>
             <NewMessageNotification/>
+            <NewUserModal show={showNewuserModal} onClose={(e) => setShowNewUselModal(false)}/>
         </>
     );
 }
