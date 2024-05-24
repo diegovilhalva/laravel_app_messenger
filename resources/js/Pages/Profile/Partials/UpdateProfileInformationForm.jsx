@@ -4,22 +4,26 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
+import UserAvatar from '@/Components/App/UserAvatar';
 
 export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
     const user = usePage().props.auth.user;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
+    const { data, setData, post, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
+        avatar:null,
         email: user.email,
+        _method:"PATCH"
     });
 
     const submit = (e) => {
         e.preventDefault();
 
-        patch(route('profile.update'));
+        post(route('profile.update'));
     };
 
     return (
+        
         <section className={className}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">Informaçoes do perfil</h2>
@@ -30,6 +34,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
+                <UserAvatar user={user} profile={true}/>
                 <div>
                     <InputLabel htmlFor="name" value="Nome" />
 
@@ -44,6 +49,14 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                     />
 
                     <InputError className="mt-2" message={errors.name} />
+                </div>
+                <div>
+                    <InputLabel htmlFor="avatar" value="Foto de perfil" />
+
+                   <input type="file" name="" id="avatar" className='file-input file-input-bordered file-input-primary w-full max-w-xs' onChange={(e) => setData('avatar',e.target.files[0])} accept='image/*' />
+                   <p className='text-gray-400 mt-1 text-xs'>Max resolução 512 x 512</p>
+
+                    <InputError className="mt-2" message={errors.avatar} />
                 </div>
 
                 <div>
