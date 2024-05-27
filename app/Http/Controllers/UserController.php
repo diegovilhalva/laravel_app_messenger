@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\UserBlockedUnblocked;
+use App\Mail\UserCreated;
+use App\Mail\UserRoleChanged;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 class UserController extends Controller
 {
@@ -18,8 +22,9 @@ class UserController extends Controller
        $rawPassword = '12345678';
         $data['password'] = bcrypt($rawPassword);
         $data['email_verified_at'] = now();
-         User::create($data);
+         $user = User::create($data);
 
+         Mail::to($user)->send(new UserCreated($user,$rawPassword));
         return redirect()->back();
     }
 
@@ -29,6 +34,7 @@ class UserController extends Controller
 
         $message = 'Usuáro mudou para  ' . ($user->is_admin ? 'Admin' : 'Usuário comum');
 
+        Mail::to($user)->send(new UserRoleChanged($user));
         return response()->json(['message' => $message]);
 
     }
@@ -43,6 +49,8 @@ class UserController extends Controller
                 $message = 'Conta bloqueada';
             }
             $user->save();
+
+            Mail::to($user)->send(new UserBlockedUnblocked($user));
 
             return response()->json(['message' => $message]);
 
